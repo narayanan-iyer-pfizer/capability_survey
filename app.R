@@ -4,7 +4,7 @@ library(shiny)
 source("utils.R")
 vg <- read.csv("questions.csv", check.names = FALSE)
 option <- c("Not Trained","Novice",
-  "Inter-mediate",
+  "Intermediate",
   "Advanced",
   "Expert",
   "No Change from Previous",
@@ -35,17 +35,24 @@ df1 <- imap_dfr(vg,~ create_question_matrix(question =.x[.x != ""],
                      "Demotion Management System",
                      "Statistics for non-statisticians",
                      "Interns Training",
-                     "QPC Initiative")
+                     "QPC Initiative",
+                     "Other")
                      ,
-          input_id = "newopt",input_type ="mc" ,
+          input_id = "newworkstream_initiative",input_type ="mc" ,
           dependence = NA,
           dependence_value = NA,
           required = TRUE) |>
+  add_row(question = "Enter new untagged workstream/Initiative exposure ",
+  option = "Enter your Answer",
+  input_id = "newworkstream_initiative_other",input_type ="text" ,
+  dependence = "newworkstream_initiative",
+  dependence_value = "Other",
+  required = TRUE) |>
   add_row(question = c("Enter any new Therapeutic Area exposure (if any)",
                        "Enter any new topic you want to train/mentor newcomers in (if any)",
                        "Enter any other new experience/skillset you learned this semester that were not captured above (if any)"
                        ),
-          option = NA,
+          option = "Enter your Answer",
           input_id = c(paste0("newopt",1:3)),input_type ="text" ,
           dependence = NA,
           dependence_value = NA,
@@ -55,7 +62,7 @@ ui <- shiny::fluidPage(
   tags$head(
     # Note the wrapping of the string in HTML()
     tags$style(HTML("
-      @import url('https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap');
+      
       body {
         background-color: #006ABE;
         color: black;
@@ -65,9 +72,8 @@ ui <- shiny::fluidPage(
 	text-align: left !important;
 	width: 25px;
 }
-     body {
-    font-family: Segoe UI,Segoe WP,Tahoma,Arial,sans-serif;
-    font-size: 15px;
+    body {
+	font-family: Segoe UI,Segoe WP,Tahoma,Arial, sans-serif !important;
 }
       .shiny-input-container {
         color: #474747;
@@ -83,13 +89,17 @@ tags$br(),
 tags$u(tags$b("Technical Scale for Items 1-14:")),
 tags$br(),
 tags$ul(
-tags$li(tags$b("* Not Trained"),": no technical know-how"), 
-tags$li(tags$b("* Novice"),": trained or knowledgeable with no hands on experience"),
-tags$li(tags$b("* Intermediate"),": limited exposure, can work with guidance"),
-tags$li(tags$b("* Advanced"),": mid-level exposure, can handle tasks independently"),
-tags$li(tags$b("* Expert"),": thoroughly skilled, can train/mentor other colleagues")),
+tags$li(tags$b("Not Trained"),": no technical know-how"), 
+tags$li(tags$b("Novice"),": trained or knowledgeable with no hands on experience"),
+tags$li(tags$b("Intermediate"),": limited exposure, can work with guidance"),
+tags$li(tags$b("Advanced"),": mid-level exposure, can handle tasks independently"),
+tags$li(tags$b("Expert"),": thoroughly skilled, can train/mentor other colleagues")),
 
-tags$u("Soft Skill Scale for Item 15 (from learning.pfizer.com):"),
+tags$u("Soft Skill Scale for Item 15 (from ",tags$a(
+  "learning.pfizer.com",
+  target = "_blank",
+  href = "learning.pfizer.com"
+),"):"),
 tags$br(),
 tags$br(),
 tags$b("1: "),"You have general knowledge about some aspects of the Skill. You are beginning to learn the tools associated with your Skill and how to use them to complete simple, routine tasks. Your best work is in a structured environment with supervision, predetermined processes, and established criteria to judge output against.",
@@ -118,6 +128,10 @@ server <- function(input, output, session) {
   
   
   shinysurveys::renderSurvey()
+  observeEvent(input$submit,{
+    
+     
+  })
 }
 
 shiny::shinyApp(ui = ui, server = server)
