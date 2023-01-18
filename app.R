@@ -1,8 +1,9 @@
 library(shinysurveys)
-library(tidyverse)
+library(purrr)
+library(dplyr)
 library(shiny)
 source("utils.R")
-vg <- read.csv("questions.csv", check.names = FALSE)
+vg <- read.csv("questions.csv", check.names = FALSE,fileEncoding = "UTF-8")
 option <- c("Not Trained","Novice",
   "Intermediate",
   "Advanced",
